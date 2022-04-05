@@ -1,7 +1,7 @@
 # Longshort-analysis pipeline
 ## Preprocessing with long read data
 ### Convert existing bam file to fastq file
-bedtools bamtofastq -i m54189_170915_112634.subreads.bam -fq m1.subread.fastq
+* bedtools bamtofastq -i m54189_170915_112634.subreads.bam -fq m1.subread.fastq *
 
 ### Align m1 long reads to full genome (GRCh38)
 minimap2 -ax splice -uf -C5 GRCh38.p13.genome.fa m1.subread.fastq | samtools sort -o m1.genome.align.bam
