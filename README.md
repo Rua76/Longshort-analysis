@@ -53,6 +53,15 @@
 
 *gffcompare -r m1_subreads_stgt2.gtf -o gffcompare denovo_full_m1_merge.gtf*
 
+### Trail Four: Cuffmerge
+*cuffmerge -o cuffmerge_output -p 30 -g gencode.v39.annotation.gtf assembly_GTF_list.txt*
+
+assembly_GTF_list.txt contains path to GTF files to be merged, I put gencode.v39.annotation.gtf and m1_subreads_stgt2.gtf path here
+
+**Comment: Not good, cannot be used for assigning counts**
+
+*gffcompare -r m1_subreads_stgt2.gtf -o gffcompare denovo_full_m1_merge.gtf*
+
 ## Using merged GTF as guidance to assign estimated/raw counts for each transcript
 
 estimated counts are obtained in abundance file generated with Kallisto
