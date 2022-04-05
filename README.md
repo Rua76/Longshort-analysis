@@ -44,9 +44,13 @@ gffcompare -r m1_subreads_stgt2.gtf -o gffcompare denovo_full_m1_merge.gtf
 ## Using merged GTF as guidance to assign estimated/raw counts for each transcript
 
 estimated counts are obtained in abundance file generated with Kallisto
+
 raw count can be obtained with following command lines:
+
 samtools idxstats sortedonestep.bam > idxstat.txt
+
 awk '{print $1, $3}' longshortidxstat.txt > idxstatmapped.txt  (third column is mapped raw count)
 
 These data are processed to csv files, which can be easily read in pandas
 
+## The jupyter lab book for processing data to get scatter plot can be found in attached file
