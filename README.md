@@ -60,7 +60,6 @@ assembly_GTF_list.txt contains path to GTF files to be merged, I put gencode.v39
 
 **Comment: Not good, cannot be used for assigning counts**
 
-*gffcompare -r m1_subreads_stgt2.gtf -o gffcompare denovo_full_m1_merge.gtf*
 
 ## Using merged GTF as guidance to assign estimated/raw counts for each transcript
 
