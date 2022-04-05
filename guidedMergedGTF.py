@@ -9,8 +9,11 @@ from hilearn.plot import corr_plot
 granno = pr.read_gtf("gencode.v39.annotation.gtf")
 dfanno = granno.df
 
-#change read data to dataFrame 
+guided_m1_gr = pr.read_gtf("guided_m1_annotated.gtf")
+
 guided_m1 = guided_m1_gr.df
+#change read data to dataFrame 
+
 
 #selecting transcripts
 guided_m1_trans = guided_m1[guided_m1['Feature'] == 'transcript']
