@@ -31,9 +31,11 @@ gffcompare -r gencode.v39.annotation.gtf -R m1_subreads_stgt2.gtf
 
 ### Trail two: StringTie merging mode, guided
 Use Stringtie to merge predicted transcripts from all libraries into a unified transcriptome.
+
 stringtie --rf --merge -p 4 -o stringtie_merged.gtf -G gencode.v39.annotation.gtf m1_subreads_stgt2.gtf
 
 Compare reference guided transcripts to the known annotations
+
 gffcompare -r m1_subreads_stgt2.gtf -o gffcompare stringtie_merged.gtf
 
 ### Trail three: StringTie merging mode, de novo
