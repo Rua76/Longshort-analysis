@@ -25,6 +25,16 @@
 ### long-short reads analysis
 *kallisto quant -i m1v39index -o /storage/yhhuang/users/yhsz/2022_longread/analysis0321/longshort --pseudobam GX069-AO_1.fastq.gz GX069-AO_2.fastq.gz*
 
+## Bam file read count analysis to investigate sensitivity
+### Primary mapped
+*samtools view -b -F 260 pseudoalignments.bam > primarymapped.bam*
+
+### Mapped
+*samtools view -b -F 4 pseudoalignments.bam > primarymapped.bam*
+
+### Unmapped
+*samtools view -b -f 4 pseudoalignments.bam > primarymapped.bam*
+
 ## Merging GTF files
 ### Trail one: Gffcompare
 *gffcompare -r gencode.v39.annotation.gtf -R m1_subreads_stgt2.gtf*
