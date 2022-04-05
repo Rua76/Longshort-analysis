@@ -18,7 +18,7 @@ guided_m1_trans = guided_m1[guided_m1['Feature'] == 'transcript']
 #counting class codes
 guided_m1_trans.groupby('class_code').count()
 
-#reading long-short abundance file
+#reading long-short abundance file. Files containing raw count data can also be used here.
 longshort = pd.read_csv('longshort.comma.csv')
 
 #reading and adjusting onestep abundance file
@@ -43,4 +43,19 @@ y = simpguided_1.loc[:,'log10_onestep_est'].values
 corr_plot(x, y)
 
 
-"""select """ 
+"""select highest expressed transcript for each gene and analyze the abundance""" 
+#I select transcript with highest TPM for each gene, then put them into a new dataFrame
+idx = transcript.groupby(['gene_id'])['TPM'].transform(max) == transcript['TPM']
+primarytrans = transcript[idx]
+
+#find the inner join of this new dataFrame and our previous count-assigned dataFrame
+merged_max = pd.merge(left=primarytrans, right=guided2merge, how='inner', left_on = ['transcript_id'], right_on = ['target_id'])
+
+#generate scatter plot agian
+simpmax = merged_max.loc[:,['est_counts', 'onestep_est_count']]
+simpmax_1 = pd.DataFrame(simpmax + 1)
+simpmax_1['log10_longshort_est'] = np.log10(simpmax_1['est_counts'])
+simpmax_1['log10_onestep_est'] = np.log10(simpmax_1['onestep_est_count'])
+x = simpmax_1.loc[:,'log10_longshort_est'].values
+y = simpmax_1.loc[:,'log10_onestep_est'].values
+corr_plot(x, y)
