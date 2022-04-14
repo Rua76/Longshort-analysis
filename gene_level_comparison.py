@@ -87,5 +87,15 @@ merge2 = pd.merge(left=merge1, right=max_count_ref, how='inner', left_on = ['ENS
 #creating csv file for storing intermediate data
 merge2.to_csv('merged_gtf_with_abundance.csv')
 
-
+#plotting scatter plot with HiLearn
+#Here, the estimated count for both methods are added with pseudocount of 1, and log normalized with log10
+simp = merge2.loc[:,['est_counts', 'onestep_est_count']]
+print (simp)
+merge2_1 = pd.DataFrame(simp + 1)
+merge2_1['log10_longshort_est'] = np.log10(merge2_1['est_counts'])
+merge2_1['log10_onestep_est'] = np.log10(merge2_1['onestep_est_count'])
+x = merge2_1.loc[:,'log10_longshort_est'].values
+y = merge2_1.loc[:,'log10_onestep_est'].values
+corr_plot(x, y)
+#scatter plot generated
 
