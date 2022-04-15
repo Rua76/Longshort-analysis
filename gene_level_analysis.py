@@ -2,8 +2,8 @@ import pyranges as pr
 import pandas as pd
 import seaborn as sns; sns.set_theme(color_codes=True)
 import numpy as np
-
-from hilearn.plot import corr_plot
+import hilearn
+import matplotlib.pyplot as plt
 
 #reading gtf files
 ref = pr.read_gtf("gencode.v39.annotation.gtf")
@@ -66,36 +66,37 @@ gene_reference.to_csv('gene_reference.csv')
 
 #user can start here to read intermediate data, avoiding to read gtf files again
 gene_reference = pd.read_csv('gene_reference.csv')
+df_onestep = pd.read_csv(
+    '/storage/yhhuang/users/yhsz/sampledata/m1_sample/onestep/abundance.tsv', sep='\t')
 
-#read abundance files here
-longshort = pd.read_csv('longshort.comma.csv')
-fullabundance = pd.read_csv('fullAOabund.csv')
-fullabundance.columns = ['transcript_id', 'gene_id', 'HAVANA_gene_id','HAVANA_trans_id','transcript_name','gene_name','length','transcript_type','_length', 'eff_length', 'onestep_est_count', 'TPM']
+df_onestep.shape
 
-#In gene-level comparison, for each gene, we focus on most expressed transcripts for both standard method and our long-short hybrid method
-#We select such transcript according to their TPM value
-gene_reference.groupby(['ENSG'])['ST_TPM'].transform(max)
-tar_idx = gene_reference.groupby(['ENSG'])['ST_TPM'].transform(max) == gene_reference['ST_TPM']
-max_count_tar = gene_reference[tar_idx]
+df_onestep['tran_id'] = [x.split('|')[0] for x in df_onestep['target_id']]
+df_onestep['gene_id'] = [x.split('|')[1] for x in df_onestep['target_id']]
+df_onestep['gene_type'] = [x.split('|')[-2] for x in df_onestep['target_id']]
 
-ref_idx = fullabundance.groupby(['gene_id'])['TPM'].transform(max) == fullabundance['TPM']
-max_count_ref = fullabundance[ref_idx]
+df_onestep = df_onestep[df_onestep['gene_type'] == 'protein_coding']
 
-#assigning estimated count number to each gene
-merge1 = pd.merge(left=longshort, right=max_count_tar, how='inner', left_on = ['target_id'], right_on = ['ST_transcript'])
-merge2 = pd.merge(left=merge1, right=max_count_ref, how='inner', left_on = ['ENSG'], right_on = ['gene_id'])
-#creating csv file for storing intermediate data
-merge2.to_csv('merged_gtf_with_abundance.csv')
+df_tmp = df_onestep[['gene_id', 'tpm']]
+df_1step_ENSG = df_tmp.groupby(['gene_id']).max()
+#histogram of tmp distribution
+plt.hist(np.log2(df_1step_ENSG['tpm'] + 1), bins=100)
+plt.show()
 
-#plotting scatter plot with HiLearn
-#Here, the estimated count for both methods are added with pseudocount of 1, and log normalized with log10
-simp = merge2.loc[:,['est_counts', 'onestep_est_count']]
-print (simp)
-merge2_1 = pd.DataFrame(simp + 1)
-merge2_1['log10_longshort_est'] = np.log10(merge2_1['est_counts'])
-merge2_1['log10_onestep_est'] = np.log10(merge2_1['onestep_est_count'])
-x = merge2_1.loc[:,'log10_longshort_est'].values
-y = merge2_1.loc[:,'log10_onestep_est'].values
-corr_plot(x, y)
-#scatter plot generated
+#abundance assignment
+st_idx = hilearn.match(gene_reference['ST_transcript'].values, 
+                       df_longshort['target_id'].values)
+gene_reference['st_tpm_new'] = df_longshort['tpm'].values[st_idx]
+df_st_ENSG = gene_reference[['ENSG', 'st_tpm_new']]
+df_st_ENSG = df_st_ENSG.groupby(['ENSG']).max()
 
+df_comb_ENSG = pd.concat([df_st_ENSG, df_1step_ENSG], axis=1, join="inner")
+
+fig = plt.figure(dpi=80)
+hilearn.plot.corr_plot(
+    np.log2(df_comb_ENSG['st_tpm_new'].values + 1), 
+    np.log2(df_comb_ENSG['tpm'].values + 1)
+)
+plt.xlabel('log2(TPM+1), StringTie gene')
+plt.ylabel('log2(TPM+1), Ensembl gene')
+plt.show()
