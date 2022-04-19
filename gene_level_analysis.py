@@ -68,6 +68,8 @@ gene_reference.to_csv('gene_reference.csv')
 gene_reference = pd.read_csv('gene_reference.csv')
 df_onestep = pd.read_csv(
     '/storage/yhhuang/users/yhsz/sampledata/m1_sample/onestep/abundance.tsv', sep='\t')
+df_longshort = pd.read_csv(
+    '/storage/yhhuang/users/yhsz/sampledata/m1_sample/longshort/abundance.tsv', sep='\t')
 
 df_onestep.shape
 
